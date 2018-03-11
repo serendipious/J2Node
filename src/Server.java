@@ -13,24 +13,26 @@ public class Server {
 	private Socket socket = null;
 	static final String IP = "127.0.0.1";
 	static final int PORT = 6969;
-	static final int NUM_TEST_ITERS = 1000;
+	static final int NUM_TEST_ITERS = 10;
 	static final int KB_BYTES = 1024;
-	static final int[] MESSAGE_SIZES_KB = {1,10,100,200,300,400,500,800,1024};
+	static final int[] MESSAGE_SIZES_KB = {1024};
+	// static final int[] MESSAGE_SIZES_KB = {1,10,100,200,300,400,500,800,1024};
 
 	static String generateRandString(int size) {
 		String randStr = "";
 		while (randStr.length() < size) {
 			randStr += UUID.randomUUID();
 		}
-		return randStr.substring(0, size);
+		return "{\"message\":\"" + randStr.substring(0, size - 14) + "\"}";
 	}
 
 	public static void main(String[] args) throws UnknownHostException, IOException, ClassNotFoundException {
 		Map<Integer, Double> testDurAvgs = new HashMap<>();
 		for (int messageSizeKB : MESSAGE_SIZES_KB) {
 			System.out.println("Running benchmark for message size of " + messageSizeKB + "KB");
-			String message = generateRandString(messageSizeKB*KB_BYTES);
-			Files.write(Paths.get("test_payload_" + messageSizeKB + "kb"), message.getBytes(), StandardOpenOption.CREATE);
+			// String message = generateRandString(messageSizeKB*KB_BYTES);
+			// Files.write(Paths.get("test_payloads/" + messageSizeKB + "kb"), message.getBytes(), StandardOpenOption.CREATE);
+			String message = new String(Files.readAllBytes(Paths.get("test_payloads/" + messageSizeKB + "kb")));
 
 			Server client = new Server();
 			double[] testDurationsMis = new double[NUM_TEST_ITERS];
